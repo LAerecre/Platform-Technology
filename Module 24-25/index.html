@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--Erecre, L.A.-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>      
+        body {
+            background-color: #e0f2ff; 
+            color: #003366; 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #007acc;
+        }
+
+        #locationInput {
+            padding: 10px;
+            border: 2px solid #007acc;
+            border-radius: 4px;
+            background-color: white;
+            color: #003366;
+            width: 200px;
+        }
+
+        #addLocationButton {
+            padding: 10px 20px;
+            background-color: #007acc;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #addLocationButton:hover {
+            background-color: #005fa3;
+        }
+
+        #locationsList {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #locationsList li {
+            padding: 10px;
+            background-color: #007acc;
+            color: white;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #locationsList li:hover {
+            background-color: #005fa3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Input and Button -->
+    <input type="text" id="locationInput" placeholder="Enter a location">
+    <button id="addLocationButton">Add Location</button>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Locations List -->
+    <ul id="locationsList"></ul>
+
+    <!-- Leaflet.js Library -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // JavaScript Code
+        const locationInput = document.getElementById("locationInput");
+        const addLocationButton = document.getElementById("addLocationButton");
+        const locationsList = document.getElementById("locationsList");
+
+        let locationsArray = [];
+        let map;
+
+        // Event Listener for Adding Location
+        addLocationButton.addEventListener("click", addLocation);
+
+        // Function to Add Location
+        function addLocation() {
+            const location = locationInput.value.trim();
+            if (location !== "") {
+                locationsArray.push(location);
+                locationInput.value = "";
+                updateLocationsList();
+                updateMap(location);
+            }
+        }
+
+        // Function to Update Locations List
+        function updateLocationsList() {
+            locationsList.innerHTML = "";
+            locationsArray.forEach((location) => {
+                const li = document.createElement("li");
+                li.textContent = location;
+                li.addEventListener("click", () => updateMap(location));
+                locationsList.appendChild(li);
+            });
+        }
+
+        // Function to Update Map
+        function updateMap(location) {
+            if (!map) {
+                map = L.map("map").setView([0, 0], 2);
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: "© OpenStreetMap contributors",
+                    maxZoom: 18,
+                }).addTo(map);
+            }
+
+            const coordinates = getCoordinatesForLocation(location);
+            if (coordinates) {
+                map.setView(coordinates, 6);
+                L.marker(coordinates).addTo(map).bindPopup(location);
+            } else {
+                alert("Location not found or coordinates not available.");
+            }
+        }
+
+        // Function to Get Coordinates for a Location
+        function getCoordinatesForLocation(location) {
+            const locationCoordinates = {
+                "philippines": [13.41, 122.56],
+                "taiwan": [23.697809, 120.960518],
+                "manila": [14.599512, 120.984222],
+                "iloilo": [10.720150, 122.562103],
+                // Add more locations here
+            };
+
+            return locationCoordinates[location.toLowerCase()];
+        }
+    </script>
+</body>
+</html>
